@@ -2,19 +2,20 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPlayers, createPlayer, deletePlayer } from '../../api/players.api'
 import { getTeams } from '../../api/teams.api'
+import ImageUpload from '../../components/forms/ImageUpload'
 
 export default function DashboardPlayers() {
   const queryClient = useQueryClient()
   const { data: playersData } = useQuery({ queryKey: ['players'], queryFn: () => getPlayers() })
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
-  const [form, setForm] = useState({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense' })
+  const [form, setForm] = useState({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' })
   const [error, setError] = useState('')
 
   const createMutation = useMutation({
     mutationFn: createPlayer,
     onSuccess: () => {
       queryClient.invalidateQueries(['players'])
-      setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense' })
+      setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' })
     },
     onError: (err) => setError(err.response?.data?.message || 'Error al crear jugador')
   })
@@ -51,6 +52,13 @@ export default function DashboardPlayers() {
           <input placeholder="Nacionalidad" value={form.nationality} onChange={e => setForm({ ...form, nationality: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500" />
           <input placeholder="Altura (cm)" type="number" value={form.height} onChange={e => setForm({ ...form, height: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500" />
           <input placeholder="Peso (kg)" type="number" value={form.weight} onChange={e => setForm({ ...form, weight: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500" />
+          <div className="md:col-span-2">
+            <ImageUpload
+              label="Subir foto del jugador"
+              currentImage={form.photo}
+              onUpload={(url) => setForm({ ...form, photo: url })}
+            />
+          </div>
           <button type="submit" disabled={createMutation.isPending} className="md:col-span-2 bg-orange-500 hover:bg-orange-600 py-2.5 rounded-lg font-semibold transition disabled:opacity-50">
             {createMutation.isPending ? 'Creando...' : 'Crear Jugador'}
           </button>
@@ -60,10 +68,17 @@ export default function DashboardPlayers() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {playersData?.data?.players?.map(player => (
           <div key={player._id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex justify-between items-center">
-            <div>
-              <h3 className="font-bold">{player.name} {player.lastName}</h3>
-              <p className="text-orange-400 text-sm">#{player.number} · {player.position}</p>
-              <p className="text-gray-400 text-sm">{player.team?.name}</p>
+            <div className="flex items-center gap-4">
+              {player.photo ? (
+                <img src={player.photo} alt={player.name} className="w-12 h-12 rounded-full object-cover" />
+              ) : (
+                <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-xl">👤</div>
+              )}
+              <div>
+                <h3 className="font-bold">{player.name} {player.lastName}</h3>
+                <p className="text-orange-400 text-sm">#{player.number} · {player.position}</p>
+                <p className="text-gray-400 text-sm">{player.team?.name}</p>
+              </div>
             </div>
             <button onClick={() => deleteMutation.mutate(player._id)} className="text-red-400 hover:text-red-300 text-sm border border-red-900 hover:border-red-400 px-3 py-1 rounded-lg transition">
               Eliminar
