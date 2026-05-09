@@ -16,9 +16,13 @@ export default function TeamDetail() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="flex items-center gap-6 mb-10">
-        <div className="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center font-bold text-2xl">
-          {team?.shortName}
-        </div>
+        {team?.logo ? (
+          <img src={team.logo} alt={team.name} className="w-24 h-24 rounded-full object-cover border-2 border-orange-500" />
+        ) : (
+          <div className="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center font-bold text-2xl">
+            {team?.shortName}
+          </div>
+        )}
         <div>
           <h1 className="text-3xl font-bold">{team?.name}</h1>
           <p className="text-gray-400">{team?.city}, {team?.province}</p>
