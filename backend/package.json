@@ -4,6 +4,7 @@
   "description": "API REST para la plataforma de baloncesto costarricense",
   "main": "src/index.js",
   "scripts": {
+    "seed": "node src/seed.js",
     "dev": "nodemon src/index.js",
     "start": "node src/index.js"
   },
