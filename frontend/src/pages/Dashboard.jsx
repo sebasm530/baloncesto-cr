@@ -5,6 +5,7 @@ import DashboardPlayers from './dashboard/DashboardPlayers'
 import DashboardTournaments from './dashboard/DashboardTournaments'
 import DashboardGames from './dashboard/DashboardGames'
 import DashboardNews from './dashboard/DashboardNews'
+import { motion } from 'framer-motion'
 
 const tabs = [
   { id: 'teams', label: '🏀 Equipos' },
@@ -19,29 +20,54 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('teams')
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
-      <p className="text-gray-400 mb-8">Bienvenido, {user?.name} · <span className="text-orange-400">{user?.role}</span></p>
+    <div className="bg-premium min-h-screen">
+      {/* Header */}
+      <div className="relative overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 py-12 relative">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center font-black text-lg">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h1 className="text-3xl font-black">Dashboard</h1>
+                <p className="text-gray-400 text-sm">Bienvenido, {user?.name} · <span className="text-orange-400 font-semibold">{user?.role}</span></p>
+              </div>
+            </div>
+          </motion.div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition ${activeTab === tab.id ? 'bg-orange-500 text-white' : 'bg-gray-900 text-gray-400 hover:text-white border border-gray-800'}`}
-          >
-            {tab.label}
-          </button>
-        ))}
+          {/* Tabs */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-2 mt-6 overflow-x-auto pb-1">
+            {tabs.map(tab => (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition ${
+                  activeTab === tab.id
+                    ? 'bg-orange-500 text-white glow'
+                    : 'glass text-gray-400 hover:text-white border border-white/10'
+                }`}
+              >
+                {tab.label}
+              </motion.button>
+            ))}
+          </motion.div>
+        </div>
       </div>
 
       {/* Contenido */}
-      {activeTab === 'teams' && <DashboardTeams />}
-      {activeTab === 'players' && <DashboardPlayers />}
-      {activeTab === 'tournaments' && <DashboardTournaments />}
-      {activeTab === 'games' && <DashboardGames />}
-      {activeTab === 'news' && <DashboardNews />}
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          {activeTab === 'teams' && <DashboardTeams />}
+          {activeTab === 'players' && <DashboardPlayers />}
+          {activeTab === 'tournaments' && <DashboardTournaments />}
+          {activeTab === 'games' && <DashboardGames />}
+          {activeTab === 'news' && <DashboardNews />}
+        </motion.div>
+      </div>
     </div>
   )
 }

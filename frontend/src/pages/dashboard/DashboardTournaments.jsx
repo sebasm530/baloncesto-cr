@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getTournaments, createTournament, deleteTournament } from '../../api/tournaments.api'
 import { getTeams } from '../../api/teams.api'
+import { motion } from 'framer-motion'
 
 export default function DashboardTournaments() {
   const queryClient = useQueryClient()
@@ -12,10 +13,7 @@ export default function DashboardTournaments() {
 
   const createMutation = useMutation({
     mutationFn: createTournament,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tournaments'])
-      setForm({ name: '', season: '', category: 'Nacional', startDate: '', teams: [] })
-    },
+    onSuccess: () => { queryClient.invalidateQueries(['tournaments']); setForm({ name: '', season: '', category: 'Nacional', startDate: '', teams: [] }) },
     onError: (err) => setError(err.response?.data?.message || 'Error al crear torneo')
   })
 
@@ -27,9 +25,7 @@ export default function DashboardTournaments() {
   const handleTeamToggle = (teamId) => {
     setForm(prev => ({
       ...prev,
-      teams: prev.teams.includes(teamId)
-        ? prev.teams.filter(id => id !== teamId)
-        : [...prev.teams, teamId]
+      teams: prev.teams.includes(teamId) ? prev.teams.filter(id => id !== teamId) : [...prev.teams, teamId]
     }))
   }
 
@@ -41,47 +37,50 @@ export default function DashboardTournaments() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Gestionar Torneos</h2>
+      <h2 className="text-2xl font-black mb-6 flex items-center gap-2">
+        <span className="w-1 h-7 bg-orange-500 rounded-full inline-block" />
+        Gestionar Torneos
+      </h2>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
-        <h3 className="font-bold mb-4">Nuevo Torneo</h3>
-        {error && <p className="bg-red-900 text-red-400 px-4 py-2 rounded-lg text-sm mb-4">{error}</p>}
+      <div className="glass rounded-xl border border-white/5 p-6 mb-8">
+        <h3 className="font-bold mb-4 text-orange-400">+ Nuevo Torneo</h3>
+        {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-red-900/50 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg text-sm mb-4">{error}</motion.p>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input placeholder="Nombre del torneo" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500" required />
-          <input placeholder="Temporada (ej: 2026)" value={form.season} onChange={e => setForm({ ...form, season: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500" required />
-          <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500">
+          <input placeholder="Nombre del torneo" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition" required />
+          <input placeholder="Temporada (ej: 2026)" value={form.season} onChange={e => setForm({ ...form, season: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition" required />
+          <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
             {['Nacional','Estudiantil','Femenino','Juvenil','Masters'].map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          <input type="date" value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500" required />
+          <input type="date" value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition" required />
           <div className="md:col-span-2">
-            <p className="text-gray-400 text-sm mb-2">Equipos participantes:</p>
+            <p className="text-gray-400 text-sm mb-3">Equipos participantes:</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {teamsData?.data?.teams?.map(team => (
-                <label key={team._id} className="flex items-center gap-2 bg-gray-800 px-3 py-2 rounded-lg cursor-pointer hover:border-orange-500 border border-gray-700">
+                <label key={team._id} className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer border transition ${form.teams.includes(team._id) ? 'border-orange-500 bg-orange-500/10' : 'glass border-white/10 hover:border-orange-500/50'}`}>
                   <input type="checkbox" checked={form.teams.includes(team._id)} onChange={() => handleTeamToggle(team._id)} className="accent-orange-500" />
-                  <span className="text-sm">{team.shortName}</span>
+                  <span className="text-sm font-semibold">{team.shortName}</span>
                 </label>
               ))}
             </div>
           </div>
-          <button type="submit" disabled={createMutation.isPending} className="md:col-span-2 bg-orange-500 hover:bg-orange-600 py-2.5 rounded-lg font-semibold transition disabled:opacity-50">
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={createMutation.isPending} className="md:col-span-2 bg-orange-500 hover:bg-orange-600 py-2.5 rounded-lg font-bold transition disabled:opacity-50 glow">
             {createMutation.isPending ? 'Creando...' : 'Crear Torneo'}
-          </button>
+          </motion.button>
         </form>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data?.data?.tournaments?.map(t => (
-          <div key={t._id} className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex justify-between items-center">
+        {data?.data?.tournaments?.map((t, i) => (
+          <motion.div key={t._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass rounded-xl border border-white/5 hover:border-orange-500/30 transition p-5 flex justify-between items-center">
             <div>
               <h3 className="font-bold">{t.name}</h3>
               <p className="text-orange-400 text-sm">{t.category} · {t.season}</p>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${t.status === 'en curso' ? 'bg-green-900 text-green-400' : 'bg-gray-800 text-gray-400'}`}>{t.status}</span>
+              <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${t.status === 'en curso' ? 'bg-green-900/50 text-green-400' : 'bg-gray-800 text-gray-400'}`}>{t.status}</span>
             </div>
-            <button onClick={() => deleteMutation.mutate(t._id)} className="text-red-400 hover:text-red-300 text-sm border border-red-900 hover:border-red-400 px-3 py-1 rounded-lg transition">
+            <motion.button whileHover={{ scale: 1.05 }} onClick={() => deleteMutation.mutate(t._id)} className="text-red-400 text-sm border border-red-500/30 hover:border-red-400 px-3 py-1 rounded-lg transition">
               Eliminar
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         ))}
       </div>
     </div>
