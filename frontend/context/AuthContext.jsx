@@ -4,7 +4,7 @@ import api from '../api/client'
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null)
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -19,26 +19,27 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password })
-    if (data.token) {
-      localStorage.setItem('token', data.token)
-      setUser(data.user)
-    }
-    return data
+const login = async (email, password) => {
+  const { data } = await api.post('/auth/login', { email, password })
+  if (data.requiresTwoFactor) {
+    return { requiresTwoFactor: true, userId: data.userId }
   }
+  localStorage.setItem('token', data.token)
+  setUser(data.user)
+  return data.user
+}
 
   const logout = () => {
     localStorage.removeItem('token')
     setUser(null)
   }
 
-  const isAdmin  = user?.role === 'admin'
-  const isCoach  = user?.role === 'coach' || isAdmin
+  const isAdmin = user?.role === 'admin'
+  const isCoach = user?.role === 'coach' || isAdmin
   const isPublic = !user
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAdmin, isCoach, isPublic }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout, isAdmin, isCoach, isPublic }}>
       {children}
     </AuthContext.Provider>
   )

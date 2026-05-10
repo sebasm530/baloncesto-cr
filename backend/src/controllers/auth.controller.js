@@ -1,11 +1,14 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const { sendVerificationCode } = require('../utils/email')
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   })
 }
+
+const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 exports.register = async (req, res) => {
   try {
@@ -14,19 +17,12 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'El email ya está registrado' })
     }
-
     const user = await User.create({ name, email, password, role })
     const token = signToken(user._id)
-
     res.status(201).json({
       message: 'Usuario registrado correctamente',
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -45,18 +41,72 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Email o contraseña incorrectos' })
     }
 
-    const token = signToken(user._id)
+    const code = generateCode()
+    user.twoFactorCode = code
+    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000)
+    user.twoFactorVerified = false
+    await user.save({ validateBeforeSave: false })
+
+    await sendVerificationCode(user.email, code, user.name)
 
     res.json({
-      message: 'Inicio de sesión exitoso',
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      message: 'Código de verificación enviado a tu email',
+      requiresTwoFactor: true,
+      userId: user._id
     })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+exports.verifyTwoFactor = async (req, res) => {
+  try {
+    const { userId, code } = req.body
+
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' })
+    }
+
+    if (!user.twoFactorCode || user.twoFactorCode !== code) {
+      return res.status(400).json({ message: 'Código incorrecto' })
+    }
+
+    if (user.twoFactorExpires < new Date()) {
+      return res.status(400).json({ message: 'El código ha expirado, iniciá sesión nuevamente' })
+    }
+
+    user.twoFactorCode = null
+    user.twoFactorExpires = null
+    user.twoFactorVerified = true
+    await user.save({ validateBeforeSave: false })
+
+    const token = signToken(user._id)
+    res.json({
+      message: 'Verificación exitosa',
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+exports.resendCode = async (req, res) => {
+  try {
+    const { userId } = req.body
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' })
+    }
+
+    const code = generateCode()
+    user.twoFactorCode = code
+    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000)
+    await user.save({ validateBeforeSave: false })
+
+    await sendVerificationCode(user.email, code, user.name)
+    res.json({ message: 'Código reenviado correctamente' })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

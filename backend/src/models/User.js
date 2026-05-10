@@ -33,19 +33,29 @@ const userSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true
+    },
+    twoFactorCode: {
+      type: String,
+      default: null
+    },
+    twoFactorExpires: {
+      type: Date,
+      default: null
+    },
+    twoFactorVerified: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
 )
 
-// ─── Encriptar contraseña antes de guardar ───────────────
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next()
   this.password = await bcrypt.hash(this.password, 12)
   next()
 })
 
-// ─── Método para comparar contraseñas ───────────────────
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password)
 }

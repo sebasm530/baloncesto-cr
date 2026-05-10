@@ -1,98 +1,155 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
     navigate('/')
+    setProfileOpen(false)
   }
 
   const links = [
-    { to: '/teams', label: 'Equipos' },
-    { to: '/players', label: 'Jugadores' },
-    { to: '/tournaments', label: 'Torneos' },
-    { to: '/standings', label: 'Posiciones' },
-    { to: '/news', label: 'Noticias' },
+    { to: '/teams', label: 'Equipos', icon: '🏀' },
+    { to: '/players', label: 'Jugadores', icon: '👤' },
+    { to: '/tournaments', label: 'Torneos', icon: '🏆' },
+    { to: '/standings', label: 'Posiciones', icon: '📊' },
+    { to: '/news', label: 'Noticias', icon: '📰' },
   ]
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="sticky top-0 z-50 glass border-b border-white/5"
-    >
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/">
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center">
-            <img src="/logo.png" alt="Zona Basket CR" className="h-10 w-auto" />
-          </motion.div>
-        </Link>
+    <>
+      {/* Barra superior naranja */}
+      <div className="bg-orange-500 h-1 w-full" />
 
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-1">
-          {links.map(link => (
-            <Link key={link.to} to={link.to}>
-              <motion.div
+      <motion.nav
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/5"
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+
+            {/* Logo */}
+            <Link to="/" className="shrink-0">
+              <motion.img
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  location.pathname === link.to
-                    ? 'bg-orange-500/20 text-orange-400'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {link.label}
-              </motion.div>
+                src="/logo.png"
+                alt="Zona Basket CR"
+                className="h-12 w-auto"
+              />
             </Link>
-          ))}
-        </div>
 
-        {/* Auth */}
-        <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <div className="hidden md:flex items-center gap-2">
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center font-bold text-sm">
-                  {user.name?.charAt(0).toUpperCase()}
+            {/* Links centrados */}
+            <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+              {links.map(link => {
+                const isActive = location.pathname === link.to
+                return (
+                  <Link key={link.to} to={link.to}>
+                    <motion.div
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="relative px-4 py-2 group"
+                    >
+                      <span className={`text-sm font-bold tracking-wide transition-all flex items-center gap-1.5 ${isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-white'}`}>
+                        <span className="text-base">{link.icon}</span>
+                        {link.label}
+                      </span>
+                      {/* Línea activa */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeLink"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full"
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                      {/* Línea hover */}
+                      {!isActive && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/20 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
+                      )}
+                    </motion.div>
+                  </Link>
+                )
+              })}
+            </div>
+
+            {/* Derecha — auth */}
+            <div className="flex items-center gap-3 shrink-0">
+              {user ? (
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="flex items-center gap-3 glass border border-white/10 hover:border-orange-500/50 px-3 py-2 rounded-xl transition"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-700 rounded-full flex items-center justify-center font-black text-sm">
+                      {user.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="hidden md:block text-left">
+                      <p className="text-sm font-bold leading-none">{user.name}</p>
+                      <p className="text-xs text-orange-400 mt-0.5">{user.role}</p>
+                    </div>
+                    <motion.span
+                      animate={{ rotate: profileOpen ? 180 : 0 }}
+                      className="text-gray-400 text-xs"
+                    >
+                      ▼
+                    </motion.span>
+                  </motion.button>
+
+                  {/* Dropdown */}
+                  <AnimatePresence>
+                    {profileOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 top-full mt-2 w-48 glass border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                      >
+                        {(user.role === 'admin' || user.role === 'coach') && (
+                          <Link to="/dashboard" onClick={() => setProfileOpen(false)}>
+                            <div className="px-4 py-3 hover:bg-white/5 transition flex items-center gap-2 text-sm font-semibold">
+                              ⚙️ Dashboard
+                            </div>
+                          </Link>
+                        )}
+                        <div className="border-t border-white/5" />
+                        <button
+                          onClick={handleLogout}
+                          className="w-full px-4 py-3 hover:bg-red-500/10 transition flex items-center gap-2 text-sm font-semibold text-red-400"
+                        >
+                          🚪 Cerrar sesión
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <span className="text-sm text-gray-300">{user.name}</span>
-              </div>
-              {(user.role === 'admin' || user.role === 'coach') && (
-                <Link to="/dashboard">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="text-sm text-orange-400 hover:text-orange-300 transition">
-                    Dashboard
+              ) : (
+                <Link to="/login">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-xl text-sm font-bold transition glow"
+                  >
+                    Iniciar sesión
                   </motion.div>
                 </Link>
               )}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-                className="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-lg text-sm font-semibold transition glow"
-              >
-                Salir
-              </motion.button>
-            </>
-          ) : (
-            <Link to="/login">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-lg text-sm font-semibold transition glow"
-              >
-                Iniciar sesión
-              </motion.div>
-            </Link>
-          )}
+            </div>
+
+          </div>
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
+    </>
   )
 }
