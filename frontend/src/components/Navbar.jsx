@@ -20,14 +20,13 @@ export default function Navbar() {
     { to: '/players', label: 'Jugadores', icon: '👤' },
     { to: '/tournaments', label: 'Torneos', icon: '🏆' },
     { to: '/standings', label: 'Posiciones', icon: '📊' },
+    { to: '/stats', label: 'Estadísticas', icon: '📈' },
     { to: '/news', label: 'Noticias', icon: '📰' },
   ]
 
   return (
     <>
-      {/* Barra superior naranja */}
       <div className="bg-orange-500 h-1 w-full" />
-
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -35,21 +34,31 @@ export default function Navbar() {
         className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/5"
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center h-16 gap-6">
 
-            {/* Logo */}
-            <Link to="/" className="shrink-0">
+            {/* Logo + Nombre */}
+            <Link to="/" className="flex items-center gap-3 shrink-0">
               <motion.img
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 src="/logo.png"
                 alt="Zona Basket CR"
-                className="h-12 w-auto"
+                className="h-11 w-auto"
               />
+              <div className="hidden md:block">
+                <p className="font-black text-base leading-none">
+                  <span className="text-white">Zona</span>
+                  <span className="text-orange-500"> Basket</span>
+                </p>
+                <p className="text-orange-400 font-bold text-xs tracking-widest">COSTA RICA</p>
+              </div>
             </Link>
 
-            {/* Links centrados */}
-            <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            {/* Divider */}
+            <div className="hidden md:block w-px h-8 bg-white/10 shrink-0" />
+
+            {/* Links */}
+            <div className="hidden md:flex items-center gap-1 flex-1">
               {links.map(link => {
                 const isActive = location.pathname === link.to
                 return (
@@ -57,13 +66,12 @@ export default function Navbar() {
                     <motion.div
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.95 }}
-                      className="relative px-4 py-2 group"
+                      className="relative px-3 py-2 group"
                     >
                       <span className={`text-sm font-bold tracking-wide transition-all flex items-center gap-1.5 ${isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-white'}`}>
                         <span className="text-base">{link.icon}</span>
                         {link.label}
                       </span>
-                      {/* Línea activa */}
                       {isActive && (
                         <motion.div
                           layoutId="activeLink"
@@ -71,7 +79,6 @@ export default function Navbar() {
                           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         />
                       )}
-                      {/* Línea hover */}
                       {!isActive && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/20 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
                       )}
@@ -81,8 +88,8 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Derecha — auth */}
-            <div className="flex items-center gap-3 shrink-0">
+            {/* Auth — siempre al final */}
+            <div className="flex items-center gap-3 ml-auto shrink-0">
               {user ? (
                 <div className="relative">
                   <motion.button
@@ -98,15 +105,9 @@ export default function Navbar() {
                       <p className="text-sm font-bold leading-none">{user.name}</p>
                       <p className="text-xs text-orange-400 mt-0.5">{user.role}</p>
                     </div>
-                    <motion.span
-                      animate={{ rotate: profileOpen ? 180 : 0 }}
-                      className="text-gray-400 text-xs"
-                    >
-                      ▼
-                    </motion.span>
+                    <motion.span animate={{ rotate: profileOpen ? 180 : 0 }} className="text-gray-400 text-xs">▼</motion.span>
                   </motion.button>
 
-                  {/* Dropdown */}
                   <AnimatePresence>
                     {profileOpen && (
                       <motion.div
@@ -124,10 +125,7 @@ export default function Navbar() {
                           </Link>
                         )}
                         <div className="border-t border-white/5" />
-                        <button
-                          onClick={handleLogout}
-                          className="w-full px-4 py-3 hover:bg-red-500/10 transition flex items-center gap-2 text-sm font-semibold text-red-400"
-                        >
+                        <button onClick={handleLogout} className="w-full px-4 py-3 hover:bg-red-500/10 transition flex items-center gap-2 text-sm font-semibold text-red-400">
                           🚪 Cerrar sesión
                         </button>
                       </motion.div>

@@ -29,6 +29,7 @@ app.use('/api/games',       require('./routes/game.routes'))
 app.use('/api/tournaments', require('./routes/tournament.routes'))
 app.use('/api/stats',       require('./routes/stats.routes'))
 app.use('/api/news',        require('./routes/news.routes'))
+app.use('/api/users', require('./routes/user.routes'))
 
 // ─── Ruta de salud ───────────────────────────────────────
 app.get('/api/health', (req, res) => {

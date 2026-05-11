@@ -10,6 +10,7 @@ import PlayerDetail from './pages/PlayerDetail'
 import Tournaments from './pages/Tournaments'
 import TournamentDetail from './pages/TournamentDetail'
 import Standings from './pages/Standings'
+import Stats from './pages/Stats'
 import News from './pages/News'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/tournaments" element={<Tournaments />} />
           <Route path="/tournaments/:id" element={<TournamentDetail />} />
           <Route path="/standings" element={<Standings />} />
+          <Route path="/stats" element={<Stats />} />
           <Route path="/news" element={<News />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={

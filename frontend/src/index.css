@@ -47,3 +47,27 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
+/* Fix select dropdowns */
+select {
+  background-color: #0f0f13 !important;
+  color: #f9fafb !important;
+}
+
+select option {
+  background-color: #0f0f13 !important;
+  color: #f9fafb !important;
+  padding: 8px;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #f97316 !important;
+  color: #fff !important;
+}
+
+/* Fix date inputs */
+input[type="date"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
