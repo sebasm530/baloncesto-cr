@@ -27,31 +27,31 @@ export default function Home() {
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 py-24 text-center relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center relative">
           <motion.img
             src="/logo.png"
             alt="Zona Basket CR"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            className="w-64 md:w-80 mx-auto mb-8"
+            className="w-48 sm:w-64 md:w-80 mx-auto mb-6 sm:mb-8"
           />
           <motion.p
             variants={fadeUp} initial="hidden" animate="visible" custom={1}
-            className="text-gray-400 text-xl mb-10"
+            className="text-gray-400 text-base sm:text-xl mb-8 sm:mb-10"
           >
             La plataforma oficial del baloncesto nacional
           </motion.p>
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={2}
-            className="flex gap-4 justify-center flex-wrap"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
           >
-            <Link to="/tournaments">
+            <Link to="/tournaments" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-xl font-bold text-lg transition glow">
                 Ver Torneos
               </motion.div>
             </Link>
-            <Link to="/standings">
+            <Link to="/standings" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="glass hover:border-orange-500/50 px-8 py-3 rounded-xl font-bold text-lg transition border border-white/10">
                 Tabla de Posiciones
               </motion.div>

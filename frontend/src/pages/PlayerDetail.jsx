@@ -32,7 +32,7 @@ export default function PlayerDetail() {
               </div>
             </div>
           ) : (
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-6">
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-center sm:text-left">
               {player?.photo ? (
                 <motion.img whileHover={{ scale: 1.05 }} src={player.photo} alt={player.name} className="w-28 h-28 rounded-full object-cover border-2 border-orange-500 glow" />
               ) : (
@@ -41,7 +41,7 @@ export default function PlayerDetail() {
                 </div>
               )}
               <div>
-                <h1 className="text-4xl font-black">{player?.name} {player?.lastName}</h1>
+                <h1 className="text-3xl sm:text-4xl font-black">{player?.name} {player?.lastName}</h1>
                 <p className="text-orange-400 text-lg mt-1">#{player?.number} · {player?.position}</p>
                 <p className="text-gray-400">{player?.team?.name}</p>
               </div>

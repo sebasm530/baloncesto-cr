@@ -33,16 +33,16 @@ export default function Players() {
           </motion.p>
           {/* Filtros */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex gap-3 flex-wrap">
-            <select value={filters.team} onChange={e => setFilters({ ...filters, team: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
+            <select value={filters.team} onChange={e => setFilters({ ...filters, team: e.target.value })} className="w-full sm:w-auto glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
               <option value="">Todos los equipos</option>
               {teamsData?.data?.teams?.map(t => <option key={t._id} value={t._id}>{t.name}</option>)}
             </select>
-            <select value={filters.position} onChange={e => setFilters({ ...filters, position: e.target.value })} className="glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
+            <select value={filters.position} onChange={e => setFilters({ ...filters, position: e.target.value })} className="w-full sm:w-auto glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
               <option value="">Todas las posiciones</option>
               {positions.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
             {(filters.team || filters.position) && (
-              <motion.button whileHover={{ scale: 1.05 }} onClick={() => setFilters({ team: '', position: '' })} className="text-orange-400 hover:text-orange-300 text-sm border border-orange-500/30 px-4 py-2 rounded-lg transition">
+              <motion.button whileHover={{ scale: 1.05 }} onClick={() => setFilters({ team: '', position: '' })} className="w-full sm:w-auto text-orange-400 hover:text-orange-300 text-sm border border-orange-500/30 px-4 py-2 rounded-lg transition">
                 Limpiar filtros ✕
               </motion.button>
             )}

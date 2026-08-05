@@ -10,12 +10,16 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
     navigate('/')
     setProfileOpen(false)
+    setMenuOpen(false)
   }
+
+  const closeMenu = () => setMenuOpen(false)
 
   const links = [
     { to: '/teams', label: 'Equipos', icon: '🏀' },
@@ -35,8 +39,8 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="theme-navbar sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/5"
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center h-16 gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center h-16 gap-3 sm:gap-6">
 
             {/* Logo + Nombre */}
             <Link to="/" className="flex items-center gap-3 shrink-0">
@@ -91,7 +95,17 @@ export default function Navbar() {
             </div>
 
             {/* Auth — siempre al final */}
-            <div className="flex items-center gap-3 ml-auto shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 ml-auto shrink-0">
+              <motion.button
+                type="button"
+                onClick={() => setMenuOpen(!menuOpen)}
+                whileTap={{ scale: 0.95 }}
+                aria-expanded={menuOpen}
+                aria-label="Abrir menú de navegación"
+                className="md:hidden glass border border-white/10 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition"
+              >
+                <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+              </motion.button>
               <motion.button
                 type="button"
                 onClick={toggleTheme}
@@ -160,6 +174,27 @@ export default function Navbar() {
 
           </div>
         </div>
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden overflow-hidden border-t border-white/5"
+            >
+              <div className="grid grid-cols-2 gap-1 px-4 py-3">
+                {links.map(link => {
+                  const isActive = location.pathname === link.to
+                  return (
+                    <Link key={link.to} to={link.to} onClick={closeMenu} className={`flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-bold transition ${isActive ? 'bg-orange-500/15 text-orange-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+                      <span>{link.icon}</span>{link.label}
+                    </Link>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
     </>
   )

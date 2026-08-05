@@ -68,7 +68,7 @@ export default function DashboardTeams() {
           <div className="md:col-span-2">
             <ImageUpload label="Subir logo del equipo" currentImage={form.logo} onUpload={(url) => setForm({ ...form, logo: url })} />
           </div>
-          <div className="md:col-span-2 flex gap-3">
+          <div className="md:col-span-2 flex flex-col sm:flex-row gap-3">
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 bg-orange-500 hover:bg-orange-600 py-2.5 rounded-lg font-bold transition disabled:opacity-50 glow">
               {createMutation.isPending || updateMutation.isPending ? 'Guardando...' : editing ? 'Guardar Cambios' : 'Crear Equipo'}
             </motion.button>

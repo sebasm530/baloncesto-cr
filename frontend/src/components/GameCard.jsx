@@ -7,7 +7,7 @@ export default function GameCard({ game }) {
 
   return (
     <motion.div whileHover={{ scale: 1.02 }} className="glass rounded-xl p-5 border border-white/5 hover:border-orange-500/30 transition">
-      <div className="flex justify-between items-center mb-4">
+      <div className="game-meta flex justify-between items-center gap-2 mb-4">
         <p className="text-gray-500 text-xs">{date} · {game.location || 'Por definir'}</p>
         <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
           game.status === 'finalizado' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
@@ -16,7 +16,7 @@ export default function GameCard({ game }) {
         }`}>{game.status}</span>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="game-teams flex items-center justify-between gap-4">
         {/* Equipo local */}
         <div className="flex items-center gap-3 flex-1">
           {game.homeTeam?.logo ? (
@@ -26,7 +26,7 @@ export default function GameCard({ game }) {
               {game.homeTeam?.shortName}
             </div>
           )}
-          <span className="font-bold text-sm">{game.homeTeam?.name}</span>
+          <span className="font-bold text-sm team-name">{game.homeTeam?.name}</span>
         </div>
 
         {/* Marcador */}
@@ -40,7 +40,7 @@ export default function GameCard({ game }) {
 
         {/* Equipo visitante */}
         <div className="flex items-center gap-3 flex-1 justify-end">
-          <span className="font-bold text-sm text-right">{game.awayTeam?.name}</span>
+          <span className="font-bold text-sm text-right team-name">{game.awayTeam?.name}</span>
           {game.awayTeam?.logo ? (
             <img src={game.awayTeam.logo} alt={game.awayTeam.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
           ) : (

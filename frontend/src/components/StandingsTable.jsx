@@ -1,7 +1,7 @@
 export default function StandingsTable({ standings }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full min-w-[640px] text-sm">
         <thead>
           <tr className="text-gray-400 border-b border-gray-800">
             <th className="text-left py-3 px-4">#</th>

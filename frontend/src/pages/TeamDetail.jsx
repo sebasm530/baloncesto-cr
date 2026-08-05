@@ -34,7 +34,7 @@ export default function TeamDetail() {
               </div>
             </div>
           ) : (
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-6">
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-center sm:text-left">
               {team?.logo ? (
                 <motion.img whileHover={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 0.4 }} src={team.logo} alt={team.name} className="w-24 h-24 rounded-full object-cover border-2 border-orange-500 glow" />
               ) : (
@@ -43,7 +43,7 @@ export default function TeamDetail() {
                 </div>
               )}
               <div>
-                <h1 className="text-4xl font-black">{team?.name}</h1>
+                <h1 className="text-3xl sm:text-4xl font-black">{team?.name}</h1>
                 <p className="text-gray-400 mt-1">{team?.city}, {team?.province}</p>
                 {team?.description && <p className="text-gray-500 text-sm mt-2">{team.description}</p>}
               </div>

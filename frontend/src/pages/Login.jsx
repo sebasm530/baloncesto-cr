@@ -157,7 +157,7 @@ export default function Login() {
             {success && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-green-900/50 text-green-400 border border-green-500/30 px-4 py-2 rounded-lg text-sm mb-4 text-center">{success}</motion.p>}
 
             <form onSubmit={handleVerify} className="flex flex-col items-center gap-6">
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 {twoFactor.code.map((digit, index) => (
                   <motion.input
                     key={index}
@@ -169,7 +169,7 @@ export default function Login() {
                     onChange={e => handleCodeChange(index, e.target.value.replace(/\D/g, ''))}
                     onKeyDown={e => handleCodeKeyDown(index, e)}
                     whileFocus={{ scale: 1.1 }}
-                    className={`w-12 h-14 text-center text-xl font-black rounded-xl border-2 transition focus:outline-none bg-white/5 text-white ${digit ? 'border-orange-500' : 'border-white/10 focus:border-orange-500'}`}
+                    className={`w-10 sm:w-12 h-12 sm:h-14 text-center text-lg sm:text-xl font-black rounded-xl border-2 transition focus:outline-none bg-white/5 text-white ${digit ? 'border-orange-500' : 'border-white/10 focus:border-orange-500'}`}
                   />
                 ))}
               </div>

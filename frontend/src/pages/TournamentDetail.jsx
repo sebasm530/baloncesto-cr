@@ -38,9 +38,9 @@ export default function TournamentDetail() {
                   <span className="text-green-400 text-xs font-semibold">EN CURSO</span>
                 </div>
               )}
-              <h1 className="text-5xl font-black mb-2">{tournament?.name}</h1>
+              <h1 className="text-3xl sm:text-5xl font-black mb-2 break-words">{tournament?.name}</h1>
               <p className="text-orange-400">{tournament?.category} · {tournament?.season}</p>
-              <div className="flex gap-4 mt-4">
+              <div className="flex flex-wrap gap-3 sm:gap-4 mt-4">
                 <div className="glass rounded-lg px-4 py-2 border border-white/5">
                   <p className="text-gray-400 text-xs">Equipos</p>
                   <p className="font-black text-lg">{tournament?.teams?.length || 0}</p>
