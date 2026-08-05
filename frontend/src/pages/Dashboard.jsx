@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useLoading } from '../context/LoadingContext'
 import DashboardTeams from './dashboard/DashboardTeams'
 import DashboardPlayers from './dashboard/DashboardPlayers'
 import DashboardTournaments from './dashboard/DashboardTournaments'
@@ -10,7 +11,16 @@ import { motion } from 'framer-motion'
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const { showLoading, hideLoading } = useLoading()
   const [activeTab, setActiveTab] = useState('teams')
+
+  const handleTabChange = (tabId) => {
+    showLoading('Cargando...')
+    setTimeout(() => {
+      setActiveTab(tabId)
+      hideLoading()
+    }, 500)
+  }
 
   const tabs = [
     { id: 'teams', label: '🏀 Equipos' },
@@ -42,7 +52,7 @@ export default function Dashboard() {
             {tabs.map(tab => (
               <motion.button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition ${

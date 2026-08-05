@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getPlayers, createPlayer, updatePlayer, deletePlayer } from '../../api/players.api'
 import { getTeams } from '../../api/teams.api'
 import ImageUpload from '../../components/forms/ImageUpload'
+import { useLoading } from '../../context/LoadingContext'
 import { motion } from 'framer-motion'
 
 export default function DashboardPlayers() {
   const queryClient = useQueryClient()
+  const { showLoading, hideLoading } = useLoading()
   const { data: playersData } = useQuery({ queryKey: ['players'], queryFn: () => getPlayers() })
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const [form, setForm] = useState({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' })
@@ -15,19 +17,23 @@ export default function DashboardPlayers() {
 
   const createMutation = useMutation({
     mutationFn: createPlayer,
-    onSuccess: () => { queryClient.invalidateQueries(['players']); setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al crear jugador')
+    onMutate: () => showLoading('Creando jugador...'),
+    onSuccess: () => { queryClient.invalidateQueries(['players']); setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al crear jugador'); hideLoading() }
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => updatePlayer(id, data),
-    onSuccess: () => { queryClient.invalidateQueries(['players']); setEditing(null); setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al actualizar jugador')
+    onMutate: () => showLoading('Guardando cambios...'),
+    onSuccess: () => { queryClient.invalidateQueries(['players']); setEditing(null); setForm({ name: '', lastName: '', number: '', position: 'Base', team: '', height: '', weight: '', nationality: 'Costarricense', photo: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al actualizar jugador'); hideLoading() }
   })
 
   const deleteMutation = useMutation({
     mutationFn: deletePlayer,
-    onSuccess: () => queryClient.invalidateQueries(['players'])
+    onMutate: () => showLoading('Eliminando jugador...'),
+    onSuccess: () => { queryClient.invalidateQueries(['players']); hideLoading() },
+    onError: () => hideLoading()
   })
 
   const handleEdit = (player) => {

@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getGames, createGame, registerResult } from '../../api/games.api'
 import { getTeams } from '../../api/teams.api'
 import { getTournaments } from '../../api/tournaments.api'
+import { useLoading } from '../../context/LoadingContext'
 import { motion } from 'framer-motion'
 
 export default function DashboardGames() {
   const queryClient = useQueryClient()
+  const { showLoading, hideLoading } = useLoading()
   const { data: gamesData } = useQuery({ queryKey: ['games'], queryFn: () => getGames() })
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const { data: tournamentsData } = useQuery({ queryKey: ['tournaments'], queryFn: () => getTournaments() })
@@ -16,13 +18,16 @@ export default function DashboardGames() {
 
   const createMutation = useMutation({
     mutationFn: createGame,
-    onSuccess: () => { queryClient.invalidateQueries(['games']); setForm({ tournament: '', homeTeam: '', awayTeam: '', date: '', location: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al crear partido')
+    onMutate: () => showLoading('Programando partido...'),
+    onSuccess: () => { queryClient.invalidateQueries(['games']); setForm({ tournament: '', homeTeam: '', awayTeam: '', date: '', location: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al crear partido'); hideLoading() }
   })
 
   const resultMutation = useMutation({
     mutationFn: ({ id, data }) => registerResult(id, data),
-    onSuccess: () => { queryClient.invalidateQueries(['games']); setResultForm({ gameId: '', homeScore: '', awayScore: '' }) }
+    onMutate: () => showLoading('Registrando resultado...'),
+    onSuccess: () => { queryClient.invalidateQueries(['games']); setResultForm({ gameId: '', homeScore: '', awayScore: '' }); hideLoading() },
+    onError: () => hideLoading()
   })
 
   const handleSubmit = (e) => { e.preventDefault(); setError(''); createMutation.mutate(form) }

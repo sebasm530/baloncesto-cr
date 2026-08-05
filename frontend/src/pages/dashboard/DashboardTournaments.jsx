@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getTournaments, createTournament, deleteTournament } from '../../api/tournaments.api'
 import { getTeams } from '../../api/teams.api'
+import { useLoading } from '../../context/LoadingContext'
 import { motion } from 'framer-motion'
 
 export default function DashboardTournaments() {
   const queryClient = useQueryClient()
+  const { showLoading, hideLoading } = useLoading()
   const { data } = useQuery({ queryKey: ['tournaments'], queryFn: () => getTournaments() })
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const [form, setForm] = useState({ name: '', season: '', category: 'Nacional', startDate: '', teams: [] })
@@ -13,13 +15,16 @@ export default function DashboardTournaments() {
 
   const createMutation = useMutation({
     mutationFn: createTournament,
-    onSuccess: () => { queryClient.invalidateQueries(['tournaments']); setForm({ name: '', season: '', category: 'Nacional', startDate: '', teams: [] }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al crear torneo')
+    onMutate: () => showLoading('Creando torneo...'),
+    onSuccess: () => { queryClient.invalidateQueries(['tournaments']); setForm({ name: '', season: '', category: 'Nacional', startDate: '', teams: [] }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al crear torneo'); hideLoading() }
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteTournament,
-    onSuccess: () => queryClient.invalidateQueries(['tournaments'])
+    onMutate: () => showLoading('Eliminando torneo...'),
+    onSuccess: () => { queryClient.invalidateQueries(['tournaments']); hideLoading() },
+    onError: () => hideLoading()
   })
 
   const handleTeamToggle = (teamId) => {
@@ -29,11 +34,7 @@ export default function DashboardTournaments() {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setError('')
-    createMutation.mutate(form)
-  }
+  const handleSubmit = (e) => { e.preventDefault(); setError(''); createMutation.mutate(form) }
 
   return (
     <div>

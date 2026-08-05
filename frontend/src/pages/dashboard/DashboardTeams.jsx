@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getTeams, createTeam, updateTeam, deleteTeam } from '../../api/teams.api'
 import ImageUpload from '../../components/forms/ImageUpload'
+import { useLoading } from '../../context/LoadingContext'
 import { motion } from 'framer-motion'
 
 export default function DashboardTeams() {
   const queryClient = useQueryClient()
+  const { showLoading, hideLoading } = useLoading()
   const { data } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const [form, setForm] = useState({ name: '', shortName: '', city: '', province: 'San José', logo: '' })
   const [editing, setEditing] = useState(null)
@@ -13,19 +15,23 @@ export default function DashboardTeams() {
 
   const createMutation = useMutation({
     mutationFn: createTeam,
-    onSuccess: () => { queryClient.invalidateQueries(['teams']); setForm({ name: '', shortName: '', city: '', province: 'San José', logo: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al crear equipo')
+    onMutate: () => showLoading('Creando equipo...'),
+    onSuccess: () => { queryClient.invalidateQueries(['teams']); setForm({ name: '', shortName: '', city: '', province: 'San José', logo: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al crear equipo'); hideLoading() }
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => updateTeam(id, data),
-    onSuccess: () => { queryClient.invalidateQueries(['teams']); setEditing(null); setForm({ name: '', shortName: '', city: '', province: 'San José', logo: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al actualizar equipo')
+    onMutate: () => showLoading('Guardando cambios...'),
+    onSuccess: () => { queryClient.invalidateQueries(['teams']); setEditing(null); setForm({ name: '', shortName: '', city: '', province: 'San José', logo: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al actualizar equipo'); hideLoading() }
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteTeam,
-    onSuccess: () => queryClient.invalidateQueries(['teams'])
+    onMutate: () => showLoading('Eliminando equipo...'),
+    onSuccess: () => { queryClient.invalidateQueries(['teams']); hideLoading() },
+    onError: () => hideLoading()
   })
 
   const handleEdit = (team) => {

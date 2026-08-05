@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import api from '../api/client'
+import LoadingScreen from '../components/LoadingScreen'
 
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null)
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -21,11 +22,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password })
-    if (data.token) {
-      localStorage.setItem('token', data.token)
-      setUser(data.user)
+    if (data.requiresTwoFactor) {
+      return { requiresTwoFactor: true, userId: data.userId }
     }
-    return data
+    localStorage.setItem('token', data.token)
+    setUser(data.user)
+    return data.user
   }
 
   const logout = () => {
@@ -33,12 +35,16 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
   }
 
-  const isAdmin  = user?.role === 'admin'
-  const isCoach  = user?.role === 'coach' || isAdmin
+  const isAdmin = user?.role === 'admin'
+  const isCoach = user?.role === 'coach' || isAdmin
   const isPublic = !user
 
+  if (loading) {
+    return <LoadingScreen message="Iniciando Zona Basket CR..." />
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAdmin, isCoach, isPublic }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout, isAdmin, isCoach, isPublic }}>
       {children}
     </AuthContext.Provider>
   )

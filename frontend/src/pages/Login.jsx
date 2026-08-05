@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useLoading } from '../context/LoadingContext'
 import { register, verifyTwoFactor, resendCode } from '../api/auth.api'
 import { motion } from 'framer-motion'
 
@@ -13,6 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const { login } = useAuth()
+  const { showLoading, hideLoading } = useLoading()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -20,12 +22,12 @@ export default function Login() {
     setLoading(true)
     setError('')
     setSuccess('')
+    showLoading(mode === 'register' ? 'Creando cuenta...' : 'Verificando credenciales...')
 
     try {
       if (mode === 'register') {
         if (form.password !== form.confirmPassword) {
           setError('Las contraseñas no coinciden')
-          setLoading(false)
           return
         }
         await register({ name: form.name, email: form.email, password: form.password })
@@ -49,6 +51,7 @@ export default function Login() {
       setError(err.response?.data?.message || 'Error al procesar la solicitud')
     } finally {
       setLoading(false)
+      hideLoading()
     }
   }
 
@@ -72,20 +75,22 @@ export default function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    showLoading('Verificando código...')
     try {
       const code = twoFactor.code.join('')
       if (code.length !== 6) {
         setError('Ingresá el código completo de 6 dígitos')
-        setLoading(false)
         return
       }
       const { data } = await verifyTwoFactor({ userId: twoFactor.userId, code })
       localStorage.setItem('token', data.token)
+      showLoading('Iniciando sesión...')
       window.location.href = data.user.role === 'admin' || data.user.role === 'coach' ? '/dashboard' : '/'
     } catch (err) {
       setError(err.response?.data?.message || 'Código incorrecto')
     } finally {
       setLoading(false)
+      hideLoading()
     }
   }
 

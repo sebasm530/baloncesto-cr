@@ -2,23 +2,28 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getNews, createNews, deleteNews } from '../../api/news.api'
 import ImageUpload from '../../components/forms/ImageUpload'
+import { useLoading } from '../../context/LoadingContext'
 import { motion } from 'framer-motion'
 
 export default function DashboardNews() {
   const queryClient = useQueryClient()
+  const { showLoading, hideLoading } = useLoading()
   const { data } = useQuery({ queryKey: ['news-all'], queryFn: () => getNews() })
   const [form, setForm] = useState({ title: '', content: '', category: 'general', published: true, image: '' })
   const [error, setError] = useState('')
 
   const createMutation = useMutation({
     mutationFn: createNews,
-    onSuccess: () => { queryClient.invalidateQueries(['news-all']); setForm({ title: '', content: '', category: 'general', published: true, image: '' }) },
-    onError: (err) => setError(err.response?.data?.message || 'Error al crear noticia')
+    onMutate: () => showLoading('Publicando noticia...'),
+    onSuccess: () => { queryClient.invalidateQueries(['news-all']); setForm({ title: '', content: '', category: 'general', published: true, image: '' }); hideLoading() },
+    onError: (err) => { setError(err.response?.data?.message || 'Error al crear noticia'); hideLoading() }
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteNews,
-    onSuccess: () => queryClient.invalidateQueries(['news-all'])
+    onMutate: () => showLoading('Eliminando noticia...'),
+    onSuccess: () => { queryClient.invalidateQueries(['news-all']); hideLoading() },
+    onError: () => hideLoading()
   })
 
   const handleSubmit = (e) => { e.preventDefault(); setError(''); createMutation.mutate(form) }
