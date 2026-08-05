@@ -4,6 +4,7 @@ import { getPlayers } from '../api/players.api'
 import { getTeams } from '../api/teams.api'
 import PlayerCard from '../components/PlayerCard'
 import { motion } from 'framer-motion'
+import ListControls from '../components/ListControls'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -15,10 +16,18 @@ const fadeUp = {
 
 export default function Players() {
   const [filters, setFilters] = useState({ team: '', position: '' })
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
   const { data, isLoading } = useQuery({ queryKey: ['players', filters], queryFn: () => getPlayers(filters) })
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: () => import('../api/teams.api').then(m => m.getTeams()) })
 
   const positions = ['Base', 'Escolta', 'Alero', 'Ala-Pívot', 'Pívot']
+
+  const players = data?.data?.players || []
+  const filteredPlayers = players.filter((player) => `${player.name} ${player.lastName} ${player.number} ${player.position} ${player.team?.name || ''}`.toLowerCase().includes(query.toLowerCase()))
+  const paginatedPlayers = filteredPlayers.slice((page - 1) * 6, page * 6)
+  const updateFilters = (nextFilters) => { setFilters(nextFilters); setPage(1) }
+  const handleSearch = (value) => { setQuery(value); setPage(1) }
 
   return (
     <div className="bg-premium min-h-screen">

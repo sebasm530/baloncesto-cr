@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getTeams } from '../api/teams.api'
 import TeamCard from '../components/TeamCard'
 import { motion } from 'framer-motion'
+import ListControls from '../components/ListControls'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -13,6 +15,16 @@ const fadeUp = {
 
 export default function Teams() {
   const { data, isLoading } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const teams = data?.data?.teams || []
+  const filteredTeams = teams.filter((team) => `${team.name} ${team.shortName} ${team.city} ${team.province}`.toLowerCase().includes(query.toLowerCase()))
+  const paginatedTeams = filteredTeams.slice((page - 1) * 6, page * 6)
+
+  const handleSearch = (value) => {
+    setQuery(value)
+    setPage(1)
+  }
 
   return (
     <div className="bg-premium min-h-screen">
@@ -36,13 +48,17 @@ export default function Teams() {
             ))}
           </div>
         ) : (
+          <>
+          <ListControls query={query} onQueryChange={handleSearch} totalItems={filteredTeams.length} page={page} onPageChange={setPage} itemName="equipos" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data?.data?.teams?.map((team, i) => (
+            {paginatedTeams.map((team, i) => (
               <motion.div key={team._id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.97 }}>
                 <TeamCard team={team} />
               </motion.div>
             ))}
           </div>
+          {filteredTeams.length === 0 && <p className="text-center text-gray-500 py-12">No se encontraron equipos.</p>}
+          </>
         )}
       </div>
     </div>

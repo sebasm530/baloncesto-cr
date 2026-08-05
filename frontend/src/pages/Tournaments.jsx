@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getTournaments } from '../api/tournaments.api'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import ListControls from '../components/ListControls'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -13,6 +15,16 @@ const fadeUp = {
 
 export default function Tournaments() {
   const { data, isLoading } = useQuery({ queryKey: ['tournaments'], queryFn: () => getTournaments() })
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const tournaments = data?.data?.tournaments || []
+  const filteredTournaments = tournaments.filter((tournament) => `${tournament.name} ${tournament.season} ${tournament.category} ${tournament.status}`.toLowerCase().includes(query.toLowerCase()))
+  const paginatedTournaments = filteredTournaments.slice((page - 1) * 6, page * 6)
+
+  const handleSearch = (value) => {
+    setQuery(value)
+    setPage(1)
+  }
 
   return (
     <div className="bg-premium min-h-screen">
@@ -36,8 +48,10 @@ export default function Tournaments() {
             ))}
           </div>
         ) : (
+          <>
+          <ListControls query={query} onQueryChange={handleSearch} totalItems={filteredTournaments.length} page={page} onPageChange={setPage} itemName="torneos" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data?.data?.tournaments?.map((t, i) => (
+            {paginatedTournaments.map((t, i) => (
               <motion.div
                 key={t._id}
                 variants={fadeUp}
@@ -89,6 +103,8 @@ export default function Tournaments() {
               </motion.div>
             ))}
           </div>
+          {filteredTournaments.length === 0 && <p className="text-center text-gray-500 py-12">No se encontraron torneos.</p>}
+          </>
         )}
       </div>
     </div>
