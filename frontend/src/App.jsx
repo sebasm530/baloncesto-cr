@@ -14,6 +14,7 @@ import Stats from './pages/Stats'
 import News from './pages/News'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Profile from './pages/Profile'
 
 export default function App() {
   return (
@@ -32,6 +33,11 @@ export default function App() {
           <Route path="/stats" element={<Stats />} />
           <Route path="/news" element={<News />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           <Route path="/dashboard" element={
             <ProtectedRoute roles={['admin', 'coach']}>
               <Dashboard />

@@ -144,6 +144,11 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                         className="absolute right-0 top-full mt-2 w-48 glass border border-white/10 rounded-xl overflow-hidden shadow-2xl"
                       >
+                        <Link to="/profile" onClick={() => setProfileOpen(false)}>
+                          <div className="px-4 py-3 hover:bg-white/5 transition flex items-center gap-2 text-sm font-semibold">
+                            Mi perfil
+                          </div>
+                        </Link>
                         {(user.role === 'admin' || user.role === 'coach') && (
                           <Link to="/dashboard" onClick={() => setProfileOpen(false)}>
                             <div className="px-4 py-3 hover:bg-white/5 transition flex items-center gap-2 text-sm font-semibold">

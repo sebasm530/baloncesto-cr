@@ -119,3 +119,42 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Ingresá tu contraseña actual y la nueva contraseña' })
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'La nueva contraseña debe tener al menos 6 caracteres' })
+    }
+
+    const user = await User.findById(req.user._id).select('+password')
+    if (!(await user.comparePassword(currentPassword))) {
+      return res.status(400).json({ message: 'La contraseña actual es incorrecta' })
+    }
+
+    user.password = newPassword
+    await user.save()
+    res.json({ message: 'Contraseña actualizada correctamente' })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+exports.deleteMyAccount = async (req, res) => {
+  try {
+    const { confirmation } = req.body
+    if (confirmation !== 'eliminar') {
+      return res.status(400).json({ message: 'Escribí “eliminar” para confirmar la eliminación de tu cuenta' })
+    }
+
+    await User.findByIdAndDelete(req.user._id)
+    res.json({ message: 'Tu cuenta fue eliminada correctamente' })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
