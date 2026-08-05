@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 export default function GameCard({ game }) {
   const date = new Date(game.date).toLocaleDateString('es-CR', {
@@ -6,7 +7,8 @@ export default function GameCard({ game }) {
   })
 
   return (
-    <motion.div whileHover={{ scale: 1.02 }} className="glass rounded-xl p-5 border border-white/5 hover:border-orange-500/30 transition">
+    <Link to={`/games/${game._id}`} className="block">
+    <motion.div whileHover={{ scale: 1.02 }} className="glass rounded-xl p-5 border border-white/5 hover:border-orange-500/30 transition cursor-pointer">
       <div className="game-meta flex justify-between items-center gap-2 mb-4">
         <p className="text-gray-500 text-xs">{date} · {game.location || 'Por definir'}</p>
         <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
@@ -51,5 +53,6 @@ export default function GameCard({ game }) {
         </div>
       </div>
     </motion.div>
+    </Link>
   )
 }

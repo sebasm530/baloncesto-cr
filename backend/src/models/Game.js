@@ -12,8 +12,11 @@ const playerStatsSchema = new mongoose.Schema({
   steals: { type: Number, default: 0 },
   blocks: { type: Number, default: 0 },
   turnovers: { type: Number, default: 0 },
-  fouls: { type: Number, default: 0 },
-  minutesPlayed: { type: Number, default: 0 }
+  fouls: { type: Number, default: 0, min: 0, max: 6 },
+  minutesPlayed: { type: Number, default: 0 },
+  freeThrowsMade: { type: Number, default: 0 },
+  freeThrowsAttempted: { type: Number, default: 0 },
+  plusMinus: { type: Number, default: 0 }
 }, { _id: false })
 
 const gameSchema = new mongoose.Schema(
