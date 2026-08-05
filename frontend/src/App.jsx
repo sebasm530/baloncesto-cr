@@ -17,7 +17,7 @@ import Dashboard from './pages/Dashboard'
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-950 text-white">
+    <div className="app-shell min-h-screen flex flex-col bg-gray-950 text-white">
       <Navbar />
       <main className="flex-1">
         <Routes>

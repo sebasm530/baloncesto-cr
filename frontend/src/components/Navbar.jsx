@@ -2,9 +2,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import { useTheme } from '../context/ThemeContext'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
@@ -31,7 +33,7 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/5"
+        className="theme-navbar sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/5"
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center h-16 gap-6">
@@ -90,6 +92,17 @@ export default function Navbar() {
 
             {/* Auth — siempre al final */}
             <div className="flex items-center gap-3 ml-auto shrink-0">
+              <motion.button
+                type="button"
+                onClick={toggleTheme}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={isDark ? 'Activar modo claro' : 'Activar modo oscuro'}
+                title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                className="theme-toggle glass border border-white/10 hover:border-orange-500/50 w-10 h-10 rounded-xl flex items-center justify-center text-lg transition"
+              >
+                <span aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
+              </motion.button>
               {user ? (
                 <div className="relative">
                   <motion.button

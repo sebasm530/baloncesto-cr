@@ -15,6 +15,70 @@ body {
   overflow-x: hidden;
 }
 
+/* Modo claro: conserva el naranja de la marca y adapta los componentes existentes. */
+html.light body {
+  background-color: #f6f7fb;
+  color: #172033;
+}
+
+.light .app-shell,
+.light .bg-gray-950 {
+  background-color: #f6f7fb !important;
+}
+
+.light .bg-premium {
+  background: radial-gradient(ellipse at top, #fff1e8 0%, #f6f7fb 60%);
+}
+
+.light .theme-navbar {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(23, 32, 51, 0.12) !important;
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(23, 32, 51, 0.12);
+  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.06);
+}
+
+.light .text-white,
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300 {
+  color: #172033 !important;
+}
+
+.light .text-gray-400 { color: #526077 !important; }
+.light .text-gray-500 { color: #65728a !important; }
+.light .text-gray-600 { color: #71809a !important; }
+
+.light [class*="border-white/"] {
+  border-color: rgba(23, 32, 51, 0.12) !important;
+}
+
+.light .bg-white\/2,
+.light .bg-white\/5,
+.light .bg-white\/10 {
+  background-color: rgba(23, 32, 51, 0.05) !important;
+}
+
+.light .bg-gray-700,
+.light .bg-gray-800,
+.light .bg-gray-900 {
+  background-color: #e8ebf1 !important;
+}
+
+.light input,
+.light textarea,
+.light select {
+  color: #172033 !important;
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #71809a !important;
+}
+
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
   width: 6px;
@@ -66,8 +130,26 @@ select option:checked {
   color: #fff !important;
 }
 
+html.light select,
+html.light select option {
+  background-color: #ffffff !important;
+  color: #172033 !important;
+}
+
+html.light select option:hover,
+html.light select option:focus,
+html.light select option:checked {
+  background-color: #fff1e8 !important;
+  color: #172033 !important;
+}
+
 /* Fix date inputs */
 input[type="date"],
 input[type="datetime-local"] {
   color-scheme: dark;
+}
+
+html.light input[type="date"],
+html.light input[type="datetime-local"] {
+  color-scheme: light;
 }
