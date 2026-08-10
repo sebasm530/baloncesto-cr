@@ -5,6 +5,7 @@ import { getTournaments } from '../api/tournaments.api'
 import TeamCard from '../components/TeamCard'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useLanguage } from '../context/LanguageContext'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -16,6 +17,7 @@ const fadeUp = {
 }
 
 export default function Home() {
+  const { t } = useLanguage()
   const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const { data: newsData } = useQuery({ queryKey: ['news'], queryFn: () => getNews() })
   const { data: tournamentsData } = useQuery({ queryKey: ['tournaments'], queryFn: () => getTournaments() })
@@ -40,7 +42,7 @@ export default function Home() {
             variants={fadeUp} initial="hidden" animate="visible" custom={1}
             className="text-gray-400 text-base sm:text-xl mb-8 sm:mb-10"
           >
-            La plataforma oficial del baloncesto nacional
+            {t('home.tagline')}
           </motion.p>
           <motion.div
             variants={fadeUp} initial="hidden" animate="visible" custom={2}
@@ -48,12 +50,12 @@ export default function Home() {
           >
             <Link to="/tournaments" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-xl font-bold text-lg transition glow">
-                Ver Torneos
+                {t('home.viewTournaments')}
               </motion.div>
             </Link>
             <Link to="/standings" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="glass hover:border-orange-500/50 px-8 py-3 rounded-xl font-bold text-lg transition border border-white/10">
-                Tabla de Posiciones
+                {t('home.standings')}
               </motion.div>
             </Link>
           </motion.div>
@@ -69,9 +71,9 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-3 gap-4 text-center">
           {[
-            { label: 'Equipos', value: teamsData?.data?.teams?.length || 0 },
-            { label: 'Torneos activos', value: activeTournaments.length },
-            { label: 'Noticias', value: newsData?.data?.news?.length || 0 },
+            { label: t('home.teams'), value: teamsData?.data?.teams?.length || 0 },
+            { label: t('home.activeTournaments'), value: activeTournaments.length },
+            { label: t('home.news'), value: newsData?.data?.news?.length || 0 },
           ].map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 + i * 0.1 }}>
               <p className="text-3xl font-black text-orange-500">{stat.value}</p>
@@ -87,18 +89,18 @@ export default function Home() {
           <section className="mb-16">
             <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-2xl font-black mb-6 flex items-center gap-2">
               <span className="w-1 h-7 bg-orange-500 rounded-full inline-block" />
-              Torneos en curso
+              {t('home.ongoingTournaments')}
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {activeTournaments.map((t, i) => (
-                <motion.div key={t._id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Link to={`/tournaments/${t._id}`} className="glass rounded-xl p-5 border border-orange-500/30 hover:border-orange-500 transition block glow">
+              {activeTournaments.map((tournament, i) => (
+                <motion.div key={tournament._id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Link to={`/tournaments/${tournament._id}`} className="glass rounded-xl p-5 border border-orange-500/30 hover:border-orange-500 transition block glow">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                      <span className="text-green-400 text-xs font-semibold">EN CURSO</span>
+                      <span className="text-green-400 text-xs font-semibold">{t('home.ongoing')}</span>
                     </div>
-                    <h3 className="font-bold text-lg">{t.name}</h3>
-                    <p className="text-orange-400 text-sm">{t.category} · {t.season}</p>
+                    <h3 className="font-bold text-lg">{tournament.name}</h3>
+                    <p className="text-orange-400 text-sm">{tournament.category} · {tournament.season}</p>
                   </Link>
                 </motion.div>
               ))}
@@ -111,7 +113,7 @@ export default function Home() {
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-black flex items-center gap-2">
               <span className="w-1 h-7 bg-orange-500 rounded-full inline-block" />
-              Equipos
+              {t('home.teams')}
             </h2>
             <Link to="/teams" className="text-orange-400 hover:text-orange-300 text-sm font-semibold transition">Ver todos →</Link>
           </motion.div>

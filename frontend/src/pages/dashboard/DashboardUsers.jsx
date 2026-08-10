@@ -2,15 +2,18 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '../../api/client'
+import { getTeams } from '../../api/teams.api'
 
 const getUsers = () => api.get('/users')
 const createAdminUser = (data) => api.post('/users/admin', data)
 const deleteUser = (id) => api.delete(`/users/${id}`)
+const updateCoachTeam = ({ id, coachTeam }) => api.patch(`/users/${id}/coach-team`, { coachTeam })
 
 export default function DashboardUsers() {
   const queryClient = useQueryClient()
   const { data: usersData } = useQuery({ queryKey: ['users'], queryFn: getUsers })
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'admin' })
+  const { data: teamsData } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'admin', coachTeam: '' })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
@@ -18,7 +21,7 @@ export default function DashboardUsers() {
     mutationFn: createAdminUser,
     onSuccess: () => {
       queryClient.invalidateQueries(['users'])
-      setForm({ name: '', email: '', password: '', confirmPassword: '', role: 'admin' })
+      setForm({ name: '', email: '', password: '', confirmPassword: '', role: 'admin', coachTeam: '' })
       setSuccess('✅ Usuario creado correctamente')
       setTimeout(() => setSuccess(''), 3000)
     },
@@ -29,6 +32,11 @@ export default function DashboardUsers() {
     mutationFn: deleteUser,
     onSuccess: () => queryClient.invalidateQueries(['users'])
   })
+  const teamMutation = useMutation({
+    mutationFn: updateCoachTeam,
+    onSuccess: () => queryClient.invalidateQueries(['users']),
+    onError: (err) => setError(err.response?.data?.message || 'No se pudo actualizar el equipo')
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -38,7 +46,11 @@ export default function DashboardUsers() {
       setError('Las contraseñas no coinciden')
       return
     }
-    createMutation.mutate({ name: form.name, email: form.email, password: form.password, role: form.role })
+    if (form.role === 'coach' && !form.coachTeam) {
+      setError('Seleccioná el equipo que entrenará el coach')
+      return
+    }
+    createMutation.mutate({ name: form.name, email: form.email, password: form.password, role: form.role, coachTeam: form.coachTeam || undefined })
   }
 
   const roleColor = (role) => {
@@ -92,12 +104,23 @@ export default function DashboardUsers() {
           />
           <select
             value={form.role}
-            onChange={e => setForm({ ...form, role: e.target.value })}
+            onChange={e => setForm({ ...form, role: e.target.value, coachTeam: e.target.value === 'coach' ? form.coachTeam : '' })}
             className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition"
           >
             <option value="admin">Administrador</option>
             <option value="coach">Entrenador / Coach</option>
           </select>
+          {form.role === 'coach' && (
+            <select
+              value={form.coachTeam}
+              onChange={e => setForm({ ...form, coachTeam: e.target.value })}
+              className="glass border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition"
+              required
+            >
+              <option value="">Seleccioná el equipo que entrena</option>
+              {teamsData?.data?.teams?.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+            </select>
+          )}
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -127,12 +150,25 @@ export default function DashboardUsers() {
               <div>
                 <h3 className="font-bold">{user.name}</h3>
                 <p className="text-gray-400 text-sm">{user.email}</p>
+                {user.role === 'coach' && <p className="text-blue-400 text-xs mt-1">Equipo: {user.coachTeam?.name || 'Sin asignar'}</p>}
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs px-3 py-1 rounded-full font-bold ${roleColor(user.role)}`}>
                 {user.role}
               </span>
+              {user.role === 'coach' && (
+                <select
+                  value={user.coachTeam?._id || ''}
+                  onChange={(e) => teamMutation.mutate({ id: user._id, coachTeam: e.target.value })}
+                  disabled={teamMutation.isPending}
+                  aria-label={`Cambiar equipo de ${user.name}`}
+                  className="glass border border-white/10 rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-orange-500 disabled:opacity-50"
+                >
+                  <option value="">Asignar equipo</option>
+                  {teamsData?.data?.teams?.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+                </select>
+              )}
               {user.role !== 'public' && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}

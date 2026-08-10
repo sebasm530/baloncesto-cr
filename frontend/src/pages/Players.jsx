@@ -5,6 +5,7 @@ import { getTeams } from '../api/teams.api'
 import PlayerCard from '../components/PlayerCard'
 import { motion } from 'framer-motion'
 import ListControls from '../components/ListControls'
+import { useLanguage } from '../context/LanguageContext'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -15,6 +16,7 @@ const fadeUp = {
 }
 
 export default function Players() {
+  const { t } = useLanguage()
   const [filters, setFilters] = useState({ team: '', position: '' })
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
@@ -35,19 +37,19 @@ export default function Players() {
         <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 py-16 relative">
           <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl font-black mb-2">
-            Jugadores
+            {t('players.title')}
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-gray-400 mb-6">
-            Todos los jugadores del baloncesto costarricense
+            {t('players.description')}
           </motion.p>
           {/* Filtros */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex gap-3 flex-wrap">
             <select value={filters.team} onChange={e => setFilters({ ...filters, team: e.target.value })} className="w-full sm:w-auto glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
-              <option value="">Todos los equipos</option>
+              <option value="">{t('players.allTeams')}</option>
               {teamsData?.data?.teams?.map(t => <option key={t._id} value={t._id}>{t.name}</option>)}
             </select>
             <select value={filters.position} onChange={e => setFilters({ ...filters, position: e.target.value })} className="w-full sm:w-auto glass border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
-              <option value="">Todas las posiciones</option>
+              <option value="">{t('players.allPositions')}</option>
               {positions.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
             {(filters.team || filters.position) && (
@@ -68,7 +70,7 @@ export default function Players() {
           </div>
         ) : (
           <>
-            <p className="text-gray-500 text-sm mb-6">{data?.data?.players?.length || 0} jugadores encontrados</p>
+            <p className="text-gray-500 text-sm mb-6">{data?.data?.players?.length || 0} {t('players.found')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {data?.data?.players?.map((player, i) => (
                 <motion.div key={player._id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.97 }}>

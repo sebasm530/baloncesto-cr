@@ -3,10 +3,12 @@ import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { useTheme } from '../context/ThemeContext'
+import { useLanguage } from '../context/LanguageContext'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
   const { isDark, toggleTheme } = useTheme()
+  const { language, t, toggleLanguage } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
@@ -29,6 +31,14 @@ export default function Navbar() {
     { to: '/stats', label: 'Estadísticas', icon: '📈' },
     { to: '/news', label: 'Noticias', icon: '📰' },
   ]
+  const navigationLabels = {
+    '/teams': t('nav.teams'),
+    '/players': t('nav.players'),
+    '/tournaments': t('nav.tournaments'),
+    '/standings': t('nav.standings'),
+    '/stats': t('nav.stats'),
+    '/news': t('nav.news')
+  }
 
   return (
     <>
@@ -76,7 +86,7 @@ export default function Navbar() {
                     >
                       <span className={`text-sm font-bold tracking-wide transition-all flex items-center gap-1.5 ${isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-white'}`}>
                         <span className="text-base">{link.icon}</span>
-                        {link.label}
+                        {navigationLabels[link.to]}
                       </span>
                       {isActive && (
                         <motion.div
@@ -105,6 +115,17 @@ export default function Navbar() {
                 className="md:hidden glass border border-white/10 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition"
               >
                 <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={toggleLanguage}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+                title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+                className="glass border border-white/10 hover:border-orange-500/50 min-w-10 h-10 px-2 rounded-xl flex items-center justify-center text-sm font-black transition"
+              >
+                {language.toUpperCase()}
               </motion.button>
               <motion.button
                 type="button"
@@ -192,7 +213,7 @@ export default function Navbar() {
                   const isActive = location.pathname === link.to
                   return (
                     <Link key={link.to} to={link.to} onClick={closeMenu} className={`flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-bold transition ${isActive ? 'bg-orange-500/15 text-orange-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
-                      <span>{link.icon}</span>{link.label}
+                      <span>{link.icon}</span>{navigationLabels[link.to]}
                     </Link>
                   )
                 })}

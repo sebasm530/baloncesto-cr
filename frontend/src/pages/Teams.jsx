@@ -4,6 +4,7 @@ import { getTeams } from '../api/teams.api'
 import TeamCard from '../components/TeamCard'
 import { motion } from 'framer-motion'
 import ListControls from '../components/ListControls'
+import { useLanguage } from '../context/LanguageContext'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -14,6 +15,7 @@ const fadeUp = {
 }
 
 export default function Teams() {
+  const { t } = useLanguage()
   const { data, isLoading } = useQuery({ queryKey: ['teams'], queryFn: getTeams })
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
@@ -32,10 +34,10 @@ export default function Teams() {
         <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 py-16 relative">
           <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl font-black mb-2">
-            Equipos
+            {t('teams.title')}
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-gray-400">
-            Todos los equipos del baloncesto costarricense
+            {t('teams.description')}
           </motion.p>
         </div>
       </div>
@@ -49,7 +51,7 @@ export default function Teams() {
           </div>
         ) : (
           <>
-          <ListControls query={query} onQueryChange={handleSearch} totalItems={filteredTeams.length} page={page} onPageChange={setPage} itemName="equipos" />
+          <ListControls query={query} onQueryChange={handleSearch} totalItems={filteredTeams.length} page={page} onPageChange={setPage} itemName={t('teams.itemName')} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedTeams.map((team, i) => (
               <motion.div key={team._id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.97 }}>
@@ -57,7 +59,7 @@ export default function Teams() {
               </motion.div>
             ))}
           </div>
-          {filteredTeams.length === 0 && <p className="text-center text-gray-500 py-12">No se encontraron equipos.</p>}
+          {filteredTeams.length === 0 && <p className="text-center text-gray-500 py-12">{t('teams.noResults')}</p>}
           </>
         )}
       </div>

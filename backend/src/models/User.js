@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'coach', 'public'],
       default: 'public'
     },
+    coachTeam: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team',
+      default: null
+    },
     avatar: {
       type: String,
       default: null

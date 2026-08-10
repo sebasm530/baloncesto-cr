@@ -7,12 +7,15 @@ import DashboardTournaments from './dashboard/DashboardTournaments'
 import DashboardGames from './dashboard/DashboardGames'
 import DashboardNews from './dashboard/DashboardNews'
 import DashboardUsers from './dashboard/DashboardUsers'
+import CoachDashboard from './CoachDashboard'
 import { motion } from 'framer-motion'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const { showLoading, hideLoading } = useLoading()
   const [activeTab, setActiveTab] = useState('teams')
+
+  if (user?.role === 'coach') return <CoachDashboard />
 
   const handleTabChange = (tabId) => {
     showLoading('Cargando...')
