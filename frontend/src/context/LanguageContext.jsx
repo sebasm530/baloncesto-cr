@@ -107,6 +107,7 @@ function translateDocument(language) {
   const apply = (node) => {
     if (node.nodeType === Node.TEXT_NODE) applyText(node)
     if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.hasAttribute('data-no-translate')) return
       applyAttributes(node)
       node.childNodes.forEach(apply)
     }

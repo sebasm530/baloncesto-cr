@@ -24,12 +24,12 @@ export default function Navbar() {
   const closeMenu = () => setMenuOpen(false)
 
   const links = [
-    { to: '/teams', label: 'Equipos', icon: '🏀' },
-    { to: '/players', label: 'Jugadores', icon: '👤' },
-    { to: '/tournaments', label: 'Torneos', icon: '🏆' },
-    { to: '/standings', label: 'Posiciones', icon: '📊' },
-    { to: '/stats', label: 'Estadísticas', icon: '📈' },
-    { to: '/news', label: 'Noticias', icon: '📰' },
+    { to: '/teams', label: 'Equipos' },
+    { to: '/players', label: 'Jugadores' },
+    { to: '/tournaments', label: 'Torneos' },
+    { to: '/standings', label: 'Posiciones' },
+    { to: '/stats', label: 'Estadísticas' },
+    { to: '/news', label: 'Noticias' },
   ]
   const navigationLabels = {
     '/teams': t('nav.teams'),
@@ -84,8 +84,7 @@ export default function Navbar() {
                       whileTap={{ scale: 0.95 }}
                       className="relative px-3 py-2 group"
                     >
-                      <span className={`text-sm font-bold tracking-wide transition-all flex items-center gap-1.5 ${isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-white'}`}>
-                        <span className="text-base">{link.icon}</span>
+                      <span className={`text-sm font-bold tracking-wide transition-all ${isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-white'}`}>
                         {navigationLabels[link.to]}
                       </span>
                       {isActive && (
@@ -114,7 +113,7 @@ export default function Navbar() {
                 aria-label="Abrir menú de navegación"
                 className="md:hidden glass border border-white/10 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition"
               >
-                <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+                <span aria-hidden="true" className="text-sm font-bold tracking-wide">{menuOpen ? 'Cerrar' : 'Menú'}</span>
               </motion.button>
               <motion.button
                 type="button"
@@ -125,7 +124,7 @@ export default function Navbar() {
                 title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
                 className="glass border border-white/10 hover:border-orange-500/50 min-w-10 h-10 px-2 rounded-xl flex items-center justify-center text-sm font-black transition"
               >
-                {language.toUpperCase()}
+                <span data-no-translate>{language.toUpperCase()}</span>
               </motion.button>
               <motion.button
                 type="button"
@@ -153,7 +152,6 @@ export default function Navbar() {
                       <p className="text-sm font-bold leading-none">{user.name}</p>
                       <p className="text-xs text-orange-400 mt-0.5">{user.role}</p>
                     </div>
-                    <motion.span animate={{ rotate: profileOpen ? 180 : 0 }} className="text-gray-400 text-xs">▼</motion.span>
                   </motion.button>
 
                   <AnimatePresence>
@@ -172,14 +170,14 @@ export default function Navbar() {
                         </Link>
                         {(user.role === 'admin' || user.role === 'coach') && (
                           <Link to="/dashboard" onClick={() => setProfileOpen(false)}>
-                            <div className="px-4 py-3 hover:bg-white/5 transition flex items-center gap-2 text-sm font-semibold">
-                              ⚙️ Dashboard
+                            <div className="px-4 py-3 hover:bg-white/5 transition text-sm font-semibold">
+                              Dashboard
                             </div>
                           </Link>
                         )}
                         <div className="border-t border-white/5" />
-                        <button onClick={handleLogout} className="w-full px-4 py-3 hover:bg-red-500/10 transition flex items-center gap-2 text-sm font-semibold text-red-400">
-                          🚪 Cerrar sesión
+                        <button onClick={handleLogout} className="w-full px-4 py-3 hover:bg-red-500/10 transition text-sm font-semibold text-red-400">
+                          Cerrar sesión
                         </button>
                       </motion.div>
                     )}
@@ -212,8 +210,8 @@ export default function Navbar() {
                 {links.map(link => {
                   const isActive = location.pathname === link.to
                   return (
-                    <Link key={link.to} to={link.to} onClick={closeMenu} className={`flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-bold transition ${isActive ? 'bg-orange-500/15 text-orange-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
-                      <span>{link.icon}</span>{navigationLabels[link.to]}
+                    <Link key={link.to} to={link.to} onClick={closeMenu} className={`rounded-lg px-3 py-3 text-sm font-bold transition ${isActive ? 'bg-orange-500/15 text-orange-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+                      {navigationLabels[link.to]}
                     </Link>
                   )
                 })}
