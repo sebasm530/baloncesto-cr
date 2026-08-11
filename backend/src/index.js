@@ -50,8 +50,12 @@ app.use((err, req, res, next) => {
 })
 
 // ─── Servidor ────────────────────────────────────────────
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
-  console.log(`📋 Ambiente: ${process.env.NODE_ENV}`)
-})
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`)
+    console.log(`Ambiente: ${process.env.NODE_ENV}`)
+  })
+}
+
+module.exports = app
